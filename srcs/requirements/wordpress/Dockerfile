@@ -5,27 +5,25 @@
 #                                                     +:+ +:+         +:+      #
 #    By: laliao <laliao@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/01/12 01:30:41 by laliao            #+#    #+#              #
-#    Updated: 2025/01/13 02:43:05 by laliao           ###   ########.fr        #
+#    Created: 2025/01/13 02:37:29 by laliao            #+#    #+#              #
+#    Updated: 2025/01/13 03:40:03 by laliao           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FROM	debian:buster
 
-RUN		apt update -y
-RUN 	apt install -y	\
-		nginx	\
-		curl	\
-		vim		\
-		openssl
-RUN		mkdir -p /etc/nginx/ssl
-RUN		openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout /etc/nginx/ssl/inception.key -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=laliao.42.fr/UID=laliao"
-RUN		mkdir -p /var/run/nginx
-RUN		mkdir -p /var/www
+RUN		apt-get update -y
+RUN		apt-get -y install wget
+RUN		apt-get install -y php7.3\
+		php-fpm\
+		php-mysql\
+		mariadb-client
 
-COPY	conf/nginx.conf	/etc/nginx/nginx.conf
+RUN		wget https://fr.wordpress.org/wordpress-6.7.1-fr_FR.tar.gz -P /var/www
+RUN		cd /var/www && tar -xzf wordpress-6.7.1-fr_FR.tar.gz && rm wordpress-6.7.1-fr_FR.tar.gz
 
-RUN 	chmod 755 /var/www/html
-RUN		chown -R www-data:www-data /var/www/html
+RUN 	chown -R root:root /var/www/wordpress
 
-CMD 	[ "nginx", "-g", "daemon off;" ]
+COPY	conf/www.conf /etc/php/7.3/fpm/pool.d/www.conf
+
+RUN 	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
