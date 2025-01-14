@@ -6,7 +6,7 @@
 #    By: laliao <laliao@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/13 02:37:29 by laliao            #+#    #+#              #
-#    Updated: 2025/01/13 03:40:03 by laliao           ###   ########.fr        #
+#    Updated: 2025/01/14 21:25:40 by laliao           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,3 +27,14 @@ RUN 	chown -R root:root /var/www/wordpress
 COPY	conf/www.conf /etc/php/7.3/fpm/pool.d/www.conf
 
 RUN 	wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN		chmod +x wp-cli.phar
+RUN		mv wp-cli.phar /usr/local/bin/wp
+
+COPY	conf/auto_config.sh /usr/local/bin/auto_config.sh
+RUN 	chmod +x /usr/local/bin/auto_config.sh
+
+ENTRYPOINT [ "/usr/local/bin/auto_config.sh" ]
+
+RUN		mkdir -p /run/php
+
+CMD [ "/usr/sbin/php-fpm7.3 -F" ]
