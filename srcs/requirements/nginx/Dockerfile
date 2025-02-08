@@ -6,13 +6,13 @@
 #    By: laliao <laliao@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/12 01:30:41 by laliao            #+#    #+#              #
-#    Updated: 2025/01/13 02:43:05 by laliao           ###   ########.fr        #
+#    Updated: 2025/02/08 22:17:50 by laliao           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FROM	debian:buster
+FROM	debian:bullseye
 
-RUN		apt update -y
+RUN		apt update && apt upgrade -y
 RUN 	apt install -y	\
 		nginx	\
 		curl	\
@@ -25,7 +25,7 @@ RUN		mkdir -p /var/www
 
 COPY	conf/nginx.conf	/etc/nginx/nginx.conf
 
-RUN 	chmod 755 /var/www/html
+RUN 	chmod -R 755 /var/www/html
 RUN		chown -R www-data:www-data /var/www/html
 
 CMD 	[ "nginx", "-g", "daemon off;" ]
