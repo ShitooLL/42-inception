@@ -3,7 +3,7 @@ version:  '3.8'
 services:
   mariadb:
     container_name: mariadb
-    image: mariadb:PiPe
+    image: mariadb:V1.0
     networks:
       - inception                    #le network qu'il appartient
     build: ./requirements/mariadb/.   #position du Dockerfile
@@ -11,10 +11,12 @@ services:
     volumes:
       - mariadb:/var/lib/mysql
     restart: unless-stopped         #redemarre tant qu'il n'est pas stopper
+    expose:
+      - "3306"
 
   nginx:
     container_name: nginx
-    image: nginx:PiPe
+    image: nginx:V1.0
     volumes:
       - wordpress:/var/www/html
     networks:
@@ -29,7 +31,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    image: wordpress:PiPe
+    image: wordpress:V1.0
     env_file: .env
     volumes:
       - wordpress:/var/www/html
@@ -39,6 +41,8 @@ services:
     depends_on:                     #dependance -> demarre apres MariaDB, pour la configuration de la base de donees
       - mariadb
     restart: on-failure
+    expose:
+      - "9000"
 
 volumes:
   wordpress:
@@ -46,16 +50,14 @@ volumes:
     driver_opts:
       type: 'none'                    #aucun type specifie
       o: 'bind'
-      device: "/home/user42/Documents/wordpress"
-      #device: '/Users/laliao/data/wordpress'  #endroit a stocker le dossier en local
+      device: "/home/laliao/data/wordpress"     #endroit a stocker le dossier en local
 
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'                       #volume en bind mount, peuvent etre modifier par d'autres processus en dehors de docker
-      device: "/home/user42/Documents/mariadb"
-      #device: '/Users/laliao/data/mariadb'
+      device: "/home/laliao/data/mariadb"
 
 networks:
   inception:

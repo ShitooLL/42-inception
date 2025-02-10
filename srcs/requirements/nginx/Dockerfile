@@ -6,7 +6,7 @@
 #    By: laliao <laliao@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/12 01:30:41 by laliao            #+#    #+#              #
-#    Updated: 2025/02/09 22:34:31 by laliao           ###   ########.fr        #
+#    Updated: 2025/02/10 19:20:06 by laliao           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,5 +27,7 @@ RUN		mkdir -p /var/run/nginx
 RUN		mkdir -p /var/www
 
 COPY	conf/default	/etc/nginx/sites-available/default
+
+EXPOSE	443
 
 CMD 	[ "nginx", "-g", "daemon off;" ]
