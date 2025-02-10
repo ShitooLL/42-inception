@@ -1,0 +1,62 @@
+version:  '3.8'
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:PiPe
+    networks:
+      - inception                    #le network qu'il appartient
+    build: ./requirements/mariadb/.   #position du Dockerfile
+    env_file: .env                  #fichier env a transmettre
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: unless-stopped         #redemarre tant qu'il n'est pas stopper
+
+  nginx:
+    container_name: nginx
+    image: nginx:PiPe
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - inception
+    depends_on:                     #dependance -> ne pas demarrer NGINX avant WordPress
+      - wordpress
+    build: ./requirements/nginx/.
+    env_file: .env
+    ports:
+      - "443:443"                   #le port qui sera exposer a la machine locale
+    restart: on-failure             #redemarre uniquement en cas de crash
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:PiPe
+    env_file: .env
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - inception
+    build: ./requirements/wordpress/.
+    depends_on:                     #dependance -> demarre apres MariaDB, pour la configuration de la base de donees
+      - mariadb
+    restart: on-failure
+
+volumes:
+  wordpress:
+    driver: local                   #stock le volume en local
+    driver_opts:
+      type: 'none'                    #aucun type specifie
+      o: 'bind'
+      device: "/home/user42/Documents/wordpress"
+      #device: '/Users/laliao/data/wordpress'  #endroit a stocker le dossier en local
+
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'                       #volume en bind mount, peuvent etre modifier par d'autres processus en dehors de docker
+      device: "/home/user42/Documents/mariadb"
+      #device: '/Users/laliao/data/mariadb'
+
+networks:
+  inception:
+    driver: bridge                    #bridge permet d'installer automatiquement des regles qui permettent la com aux 3 containers
