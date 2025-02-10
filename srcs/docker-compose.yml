@@ -5,12 +5,12 @@ services:
     container_name: mariadb
     image: mariadb:V1.0
     networks:
-      - inception                    #le network qu'il appartient
+      - inception                     #le network qu'il appartient
     build: ./requirements/mariadb/.   #position du Dockerfile
-    env_file: .env                  #fichier env a transmettre
+    env_file: .env                    #fichier env a transmettre
     volumes:
       - mariadb:/var/lib/mysql
-    restart: unless-stopped         #redemarre tant qu'il n'est pas stopper
+    restart: always                   #redemarre des qu'il y a un souci
     expose:
       - "3306"
 
@@ -21,13 +21,13 @@ services:
       - wordpress:/var/www/html
     networks:
       - inception
-    depends_on:                     #dependance -> ne pas demarrer NGINX avant WordPress
+    depends_on:                        #dependance -> ne pas demarrer NGINX avant WordPress
       - wordpress
     build: ./requirements/nginx/.
     env_file: .env
     ports:
-      - "443:443"                   #le port qui sera exposer a la machine locale
-    restart: on-failure             #redemarre uniquement en cas de crash
+      - "443:443"                      #le port qui sera exposer a la machine locale
+    restart: on-failure                #redemarre uniquement en cas de crash
 
   wordpress:
     container_name: wordpress
@@ -38,7 +38,7 @@ services:
     networks:
       - inception
     build: ./requirements/wordpress/.
-    depends_on:                     #dependance -> demarre apres MariaDB, pour la configuration de la base de donees
+    depends_on:                         #dependance -> demarre apres MariaDB, pour la configuration de la base de donees
       - mariadb
     restart: on-failure
     expose:
@@ -46,9 +46,9 @@ services:
 
 volumes:
   wordpress:
-    driver: local                   #stock le volume en local
+    driver: local                       #stock le volume en local
     driver_opts:
-      type: 'none'                    #aucun type specifie
+      type: 'none'                      #aucun type specifie
       o: 'bind'
       device: "/home/laliao/data/wordpress"     #endroit a stocker le dossier en local
 
@@ -56,9 +56,9 @@ volumes:
     driver: local
     driver_opts:
       type: 'none'
-      o: 'bind'                       #volume en bind mount, peuvent etre modifier par d'autres processus en dehors de docker
+      o: 'bind'                          #volume en bind mount, peuvent etre modifier par d'autres processus en dehors de docker
       device: "/home/laliao/data/mariadb"
 
 networks:
   inception:
-    driver: bridge                    #bridge permet d'installer automatiquement des regles qui permettent la com aux 3 containers
+    driver: bridge                       #bridge permet d'installer automatiquement des regles qui permettent la com aux 3 containers
