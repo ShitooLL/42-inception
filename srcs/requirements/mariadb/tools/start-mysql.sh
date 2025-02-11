@@ -8,6 +8,8 @@ echo "CREATE USER IF NOT EXISTS '$SQL_USER'@'%' IDENTIFIED BY '$SQL_PASSWORD';" 
 
 echo "GRANT ALL PRIVILEGES ON $SQL_DATABASE.* TO '$SQL_USER'@'%';" >> init.sql
 
+echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$SQL_ROOT_PASSWORD';" >> init.sql
+
 echo "FLUSH PRIVILEGES;" >> init.sql
 
 mkdir -p /run/mysqld
